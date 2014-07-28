@@ -28,16 +28,18 @@ Usage
 Once the extension is installed, simply use it in your code by  :
 
 ```php
-<?= \nkovacs\widgets\DateTimePicker::widget(); ?>
+<?= \nkovacs\datetimepicker\DateTimePicker::widget([
+    'name' => 'time',
+]); ?>
 ```
 
 or as an active field:
 
 ```php
-<?= $form->field($model, 'time')->widget(DateTimePicker::className(), [
+<?= $form->field($model, 'time')->widget(\nkovacs\datetimepicker\DateTimePicker::className(), [
     'clientOptions' => [
         'format' => 'YYYY-MM-DD HH:mm',
-    ]
+    ],
 ]) ?>
 ```
 
