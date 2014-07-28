@@ -28,7 +28,8 @@ Usage
 Once the extension is installed, simply use it in your code by  :
 
 ```php
-<?= \nkovacs\widgets\DateTimePicker::widget(); ?>```
+<?= \nkovacs\widgets\DateTimePicker::widget(); ?>
+```
 
 or as and active field:
 
