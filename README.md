@@ -31,7 +31,7 @@ Once the extension is installed, simply use it in your code by  :
 <?= \nkovacs\widgets\DateTimePicker::widget(); ?>
 ```
 
-or as and active field:
+or as an active field:
 
 ```php
 <?= $form->field($model, 'time')->widget(DateTimePicker::className(), [
