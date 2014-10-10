@@ -42,34 +42,3 @@ or as an active field:
     ],
 ]) ?>
 ```
-
-Moment
-------
-
-This extension includes [Moment.js](http://momentjs.com/). If you wish to disable the included moment.js library
-(e.g. because you have another widget that includes it or you are using it directly),
-you can override the bundle configuration in config/web.php:
-
-```php
-'components' => [
-    ...
-    'assetManager' => [
-        ...
-        'bundles' => [
-            ...
-            'nkovacs\datetimepicker\DateTimePickerAsset' => [
-                'js' => [
-                    'js/bootstrap-datetimepicker.min.js',
-                ],
-                'depends' => [
-                    'yii\web\JqueryAsset',
-                    'yii\bootstrap\BootstrapAsset',
-                    'app\assets\MomentAsset',
-                ],
-            ],
-        ],
-    ],
-],
-```
-
-Make sure you add the asset bundle that includes Moment.js to `depends`.
