@@ -123,7 +123,7 @@ class DateTimePicker extends \yii\widgets\InputWidget
         $view->registerJsFile(Yii::$app->assetManager->publish($file)[1], [
             'depends' => '\nkovacs\datetimepicker\MomentAsset',
         ]);
-        $this->clientOptions['language'] = $language;
+        $this->clientOptions['locale'] = $language;
     }
 
     /**
