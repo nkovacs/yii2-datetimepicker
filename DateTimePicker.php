@@ -77,6 +77,20 @@ class DateTimePicker extends \yii\widgets\InputWidget
      */
     public $type = self::TYPE_DATETIME;
 
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        if ($this->language === null) {
+            $this->language = Yii::$app->language;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function run()
     {
         Html::addCssClass($this->options, 'form-control');
@@ -146,9 +160,6 @@ class DateTimePicker extends \yii\widgets\InputWidget
             return;
         }
         $language = $this->language;
-        if ($language === null) {
-            $language = Yii::$app->language;
-        }
 
         $language = str_replace('_', '-', strtolower($language));
 
@@ -189,7 +200,7 @@ class DateTimePicker extends \yii\widgets\InputWidget
             } elseif (strncmp($format, 'moment:', 7) === 0) {
                 $format = substr($format, 7);
             } else {
-                $format = FormatConverter::convertDateIcuToMoment($format, $this->type);
+                $format = FormatConverter::convertDateIcuToMoment($format, $this->type, $this->language);
             }
             $this->clientOptions['format'] = $format;
         }
