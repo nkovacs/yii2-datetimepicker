@@ -49,17 +49,17 @@ class DateTimePicker extends \yii\widgets\InputWidget
     public $prepend = false;
 
     /**
-     * @var mixed datetimepicker language
+     * @var mixed datetimepicker locale
      * If null, it will use Yii::$app->language.
-     * If a string, that language will be used.
-     * If false, language will not be set and no locale files will be included.
+     * If a string, that locale will be used.
+     * If false, locale will not be set and no locale files will be included.
      * @note the format will be overriden by Yii::$app->formatter's format if $format is null.
      */
-    public $language = null;
+    public $locale = null;
 
     /**
      * @var mixed datetimepicker format
-     * If false, format will not be overriden, and will use moment's default for the language.
+     * If false, format will not be overriden, and will use moment's default for the locale.
      * If null, it will use the `timeFormat`, `dateFormat` or `datetimeFormat` from Yii::$app->formatter,
      * depending on $type.
      * If a string, it can either be an ICU format, a php format prefixed with `php:`,
@@ -83,8 +83,8 @@ class DateTimePicker extends \yii\widgets\InputWidget
     public function init()
     {
         parent::init();
-        if ($this->language === null) {
-            $this->language = Yii::$app->language;
+        if ($this->locale === null) {
+            $this->locale = Yii::$app->language;
         }
     }
 
@@ -134,43 +134,43 @@ class DateTimePicker extends \yii\widgets\InputWidget
         return $result;
     }
 
-    protected function findLanguageFile($language)
+    protected function findLocaleFile($locale)
     {
         $localesDir = Yii::getAlias('@bower/moment/locale');
-        $file = $localesDir . DIRECTORY_SEPARATOR . $language . '.js';
+        $file = $localesDir . DIRECTORY_SEPARATOR . $locale . '.js';
         if (file_exists($file)) {
             return $file;
         }
 
-        $sep = strpos($language, '-');
+        $sep = strpos($locale, '-');
         if (!$sep) {
             return false;
         }
-        $language = substr($language, 0, $sep);
-        $file = $localesDir . DIRECTORY_SEPARATOR . $language . '.js';
+        $locale = substr($locale, 0, $sep);
+        $file = $localesDir . DIRECTORY_SEPARATOR . $locale . '.js';
         if (file_exists($file)) {
             return $file;
         }
         return false;
     }
 
-    protected function registerLanguage($view)
+    protected function registerLocale($view)
     {
-        if ($this->language === false) {
+        if ($this->locale === false) {
             return;
         }
-        $language = $this->language;
+        $locale = $this->locale;
 
-        $language = str_replace('_', '-', strtolower($language));
+        $locale = str_replace('_', '-', strtolower($locale));
 
-        $file = $this->findLanguageFile($language);
+        $file = $this->findLocaleFile($locale);
         if ($file === false) {
             return;
         }
         $view->registerJsFile(Yii::$app->assetManager->publish($file)[1], [
             'depends' => '\nkovacs\datetimepicker\MomentAsset',
         ]);
-        $this->clientOptions['locale'] = $language;
+        $this->clientOptions['locale'] = $locale;
     }
 
     protected function registerFormat()
@@ -200,7 +200,7 @@ class DateTimePicker extends \yii\widgets\InputWidget
             } elseif (strncmp($format, 'moment:', 7) === 0) {
                 $format = substr($format, 7);
             } else {
-                $format = FormatConverter::convertDateIcuToMoment($format, $this->type, $this->language);
+                $format = FormatConverter::convertDateIcuToMoment($format, $this->type, $this->locale);
             }
             $this->clientOptions['format'] = $format;
         }
@@ -216,7 +216,7 @@ class DateTimePicker extends \yii\widgets\InputWidget
 
         DateTimePickerAsset::register($view);
 
-        $this->registerLanguage($view);
+        $this->registerLocale($view);
         $this->registerFormat();
 
         $id = $this->options['id'];
