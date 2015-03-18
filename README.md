@@ -64,3 +64,26 @@ The widget will load the moment locale file for `Yii::$app->language` if it can 
 It will also use `Yii::$app->formatter->dateFormat`, `Yii::$app->formatter->timeFormat` or `Yii::$app->formatter->datetimeFormat` depending on `type`.
 
 Both can be overriden using the `language` and `format` options.
+
+Validators
+----------
+
+The extension comes with an improved datetime validator. Yii's default DateValidator cannot handle
+time values with the default ICU 'medium' format. The validator adds a `type` option that specifies what
+kind of value should be accepted: `date`, `time` or `datetime`.
+
+To register the validator, add the following line to your app config file:
+
+```php
+\nkovacs\datetimepicker\DateTimeValidator::register();
+```
+
+This replaces the built-in `date` validator and adds a `time` and `datetime` validator:
+
+```php
+    ...
+    ['timestamp', 'datetime'],
+    ['time', 'time'],
+    ['date', 'date'],
+    ...
+```
