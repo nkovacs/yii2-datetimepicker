@@ -9,6 +9,21 @@ use yii\helpers\Json;
 class DateTimePicker extends \yii\widgets\InputWidget
 {
     /**
+     * picker with date only
+     */
+    const TYPE_DATE = 'date';
+
+    /**
+     * picker with time only
+     */
+    const TYPE_TIME = 'time';
+
+    /**
+     * picker with both date and time
+     */
+    const TYPE_DATETIME = 'datetime';
+
+    /**
      * @var array the options for the underlying Bootstrap JS plugin.
      */
     public $clientOptions = [];
@@ -34,12 +49,33 @@ class DateTimePicker extends \yii\widgets\InputWidget
     public $prepend = false;
 
     /**
-     * @var mixed datetimepicker langauge
+     * @var mixed datetimepicker language
      * If null, it will use Yii::$app->language.
      * If a string, that language will be used.
      * If false, language will not be set and no locale files will be included.
+     * @note the format will be overriden by Yii::$app->formatter's format if $format is null.
      */
     public $language = null;
+
+    /**
+     * @var mixed datetimepicker format
+     * If false, format will not be overriden, and will use moment's default for the language.
+     * If null, it will use the `timeFormat`, `dateFormat` or `datetimeFormat` from Yii::$app->formatter,
+     * depending on $type.
+     * If a string, it can either be an ICU format, a php format prefixed with `php:`,
+     * or a moment format prefixed with `moment:`
+     * @note the ICU formats "short", "medium", "long" and "full" do not
+     * specify whether the format contains a date or a time or both.
+     * In that case, $type must be used.
+     */
+    public $format = null;
+
+    /**
+     * @var string type of picker: 'date', 'time' or 'datetime'.
+     * This is only used when the format is ambiguous (i.e. one of the ICU short formats),
+     * otherwise it is ignored, and the format dictates which parts of the picker are shown.
+     */
+    public $type = self::TYPE_DATETIME;
 
     public function run()
     {
@@ -126,6 +162,39 @@ class DateTimePicker extends \yii\widgets\InputWidget
         $this->clientOptions['locale'] = $language;
     }
 
+    protected function registerFormat()
+    {
+        if ($this->format === false) {
+            // do nothing, use moment's default
+            return;
+        }
+        $format = $this->format;
+        if ($format === null) {
+            switch ($this->type) {
+                case self::TYPE_DATE:
+                    $format = Yii::$app->formatter->dateFormat;
+                    break;
+                case self::TYPE_TIME:
+                    $format = Yii::$app->formatter->timeFormat;
+                    break;
+                case self::TYPE_DATETIME:
+                    $format = Yii::$app->formatter->datetimeFormat;
+                    break;
+            }
+        }
+
+        if (is_string($format)) {
+            if (strncmp($format, 'php:', 4) === 0) {
+                $format = FormatConverter::convertDatePhpToMoment(substr($format, 4));
+            } elseif (strncmp($format, 'moment:', 7) === 0) {
+                $format = substr($format, 7);
+            } else {
+                $format = FormatConverter::convertDateIcuToMoment($format, $this->type);
+            }
+            $this->clientOptions['format'] = $format;
+        }
+    }
+
     /**
      * Registers Bootstrap plugin and the related events
      * @param boolean $addon whether to register plugin on addon instead of input
@@ -137,6 +206,7 @@ class DateTimePicker extends \yii\widgets\InputWidget
         DateTimePickerAsset::register($view);
 
         $this->registerLanguage($view);
+        $this->registerFormat();
 
         $id = $this->options['id'];
 
