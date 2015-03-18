@@ -25,7 +25,7 @@ to the require section of your `composer.json` file.
 Usage
 -----
 
-Once the extension is installed, simply use it in your code by  :
+Once the extension is installed, simply use it in your code:
 
 ```php
 <?= \nkovacs\datetimepicker\DateTimePicker::widget([
@@ -60,5 +60,7 @@ or just a timepicker:
 ```
 
 The widget will load the moment locale file for `Yii::$app->language` if it can find it.
+
 It will also use `Yii::$app->formatter->dateFormat`, `Yii::$app->formatter->timeFormat` or `Yii::$app->formatter->datetimeFormat` depending on `type`.
-Both can be overriden manually using the `language` and `format` options.
+
+Both can be overriden using the `language` and `format` options.
