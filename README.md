@@ -38,7 +38,27 @@ or as an active field:
 ```php
 <?= $form->field($model, 'time')->widget(\nkovacs\datetimepicker\DateTimePicker::className(), [
     'clientOptions' => [
-        'format' => 'YYYY-MM-DD HH:mm',
+        'extraFormats' => ['YYYY-MM-DD HH:mm'],
     ],
 ]) ?>
 ```
+
+To show just a datepicker:
+
+```php
+<?= $form->field($model, 'time')->widget(\nkovacs\datetimepicker\DateTimePicker::className(), [
+    'type' => 'date',
+]) ?>
+```
+
+or just a timepicker:
+
+```php
+<?= $form->field($model, 'time')->widget(\nkovacs\datetimepicker\DateTimePicker::className(), [
+    'type' => 'time',
+]) ?>
+```
+
+The widget will load the moment locale file for `Yii::$app->language` if it can find it.
+It will also use `Yii::$app->formatter->dateFormat`, `Yii::$app->formatter->timeFormat` or `Yii::$app->formatter->datetimeFormat` depending on `type`.
+Both can be overriden manually using the `language` and `format` options.
