@@ -63,7 +63,7 @@ The widget will load the moment locale file for `Yii::$app->language` if it can 
 
 It will also use `Yii::$app->formatter->dateFormat`, `Yii::$app->formatter->timeFormat` or `Yii::$app->formatter->datetimeFormat` depending on `type`.
 
-Both can be overriden using the `language` and `format` options.
+Both can be overriden using the `locale` and `format` options.
 
 Validators
 ----------
