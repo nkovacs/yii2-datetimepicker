@@ -227,7 +227,7 @@ class DateTimePicker extends \yii\widgets\InputWidget
         }
 
         if ($this->clientOptions !== false) {
-            $options = empty($this->clientOptions) ? '' : Json::encode($this->clientOptions);
+            $options = empty($this->clientOptions) ? '' : Json::htmlEncode($this->clientOptions);
             $js = "$selector.datetimepicker($options);";
             $view->registerJs($js);
         }
