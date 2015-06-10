@@ -41,12 +41,26 @@ class DateTimePicker extends \yii\widgets\InputWidget
 
     /**
      * @var false|string|string[] appended addon(s)
+     * '{datepicker}' will be replaced with the datepicker button
+     * '{clear}' will be replaced with the clear button
      */
-    public $append = '<span class="glyphicon glyphicon-calendar"></span>';
+    public $append = '{datepicker}';
     /**
      * @var false|string|string[] prepended addon(s)
+     * '{datepicker}' will be replaced with the datepicker button
+     * '{clear}' will be replaced with the clear button
      */
     public $prepend = false;
+
+    /**
+     * @var string html code for the date picker button
+     */
+    public $datePickerButton = '<span class="glyphicon glyphicon-calendar"></span>';
+
+    /**
+     * @var string html code for the clear button
+     */
+    public $clearButton = '<span class="glyphicon glyphicon-remove"></span>';
 
     /**
      * @var mixed datetimepicker locale
@@ -108,7 +122,7 @@ class DateTimePicker extends \yii\widgets\InputWidget
             $html .= $prepend;
         }
         $html .= $input;
-        if ($prepend !== '' || $append !== '') {
+        if ($addon) {
             $html .= $append;
             $html .= Html::endTag('div');
         }
@@ -129,7 +143,13 @@ class DateTimePicker extends \yii\widgets\InputWidget
         }
         $result= '';
         foreach ($addons as $addon) {
-             $result .= Html::tag('span', $addon, ['class' => 'input-group-addon']);
+            if ($addon === '{datepicker}') {
+                $result .= Html::tag('span', $this->datePickerButton, ['class' => 'input-group-addon datepickerbutton']);
+            } elseif ($addon === '{clear}') {
+                $result .= Html::tag('span', $this->clearButton, ['class' => 'input-group-addon clearbutton']);
+            } else {
+                $result .= Html::tag('span', $addon, ['class' => 'input-group-addon']);
+            }
         }
         return $result;
     }
@@ -228,7 +248,9 @@ class DateTimePicker extends \yii\widgets\InputWidget
 
         if ($this->clientOptions !== false) {
             $options = empty($this->clientOptions) ? '' : Json::htmlEncode($this->clientOptions);
-            $js = "$selector.datetimepicker($options);";
+            $js = "$selector.datetimepicker($options).find('.clearbutton').on('click', function() {
+                $selector.data('DateTimePicker').clear();
+            });";
             $view->registerJs($js);
         }
 
