@@ -14,7 +14,7 @@
 		"php": ">=5.4.0",
 		"yiisoft/yii2": "^2.0.4",
 		"yiisoft/yii2-bootstrap": "*",
-		"bower-asset/eonasdan-bootstrap-datetimepicker": "~4.0"
+		"bower-asset/nkovacs-bootstrap-datetimepicker": "~5.0"
 	},
 	"autoload": {
 		"psr-4": {

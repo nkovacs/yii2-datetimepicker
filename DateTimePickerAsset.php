@@ -6,7 +6,7 @@ use yii\web\AssetBundle;
 
 class DateTimePickerAsset extends AssetBundle
 {
-    public $sourcePath = '@bower/eonasdan-bootstrap-datetimepicker/';
+    public $sourcePath = '@bower/nkovacs-bootstrap-datetimepicker/';
     public $js = [
         'src/js/bootstrap-datetimepicker.js',
     ];
@@ -17,6 +17,5 @@ class DateTimePickerAsset extends AssetBundle
         'yii\web\JqueryAsset',
         'yii\bootstrap\BootstrapAsset',
         'nkovacs\datetimepicker\MomentAsset',
-        'nkovacs\datetimepicker\DateTimePickerFixAsset',
     ];
 }
