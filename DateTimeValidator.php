@@ -2,6 +2,7 @@
 
 namespace nkovacs\datetimepicker;
 
+use Yii;
 use yii\validators\Validator;
 
 /**
@@ -21,10 +22,25 @@ class DateTimeValidator extends \yii\validators\DateValidator
      */
     public function init()
     {
-        parent::init();
+        if ($this->format === null) {
+            switch ($this->type) {
+                case 'date':
+                    $this->format = Yii::$app->formatter->dateFormat;
+                    break;
+                case 'time':
+                    $this->format = Yii::$app->formatter->timeFormat;
+                    break;
+                case 'datetime':
+                    $this->format = Yii::$app->formatter->datetimeFormat;
+                    break;
+            }
+        }
+
         // if $this->format is a short format,
         // convert it to a pattern, so that DateValidator will respect $this->type.
         $this->format = FormatConverter::convertIcuShortFormatToPattern($this->format, $this->type, $this->locale);
+
+        parent::init();
     }
 
     /**
