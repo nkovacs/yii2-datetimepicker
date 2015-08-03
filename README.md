@@ -63,6 +63,8 @@ The widget will load the moment locale file for `Yii::$app->language` if it can 
 
 It will also use `Yii::$app->formatter->dateFormat`, `Yii::$app->formatter->timeFormat` or `Yii::$app->formatter->datetimeFormat` depending on `type`.
 
+Use the `timestampAttribute` property of the validator in this extension to get the parsed timestamp.
+
 Both can be overriden using the `locale` and `format` options.
 
 Validators
