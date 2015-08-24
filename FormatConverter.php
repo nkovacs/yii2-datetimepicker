@@ -30,7 +30,7 @@ class FormatConverter extends \yii\helpers\BaseFormatConverter
         'medium' => [
             'date' => 'MMM d, yyyy',
             'time' => 'HH:mm:ss',
-            'datetime' => 'M j, Y HH:mm:ss',
+            'datetime' => 'MMM d, Y HH:mm:ss',
         ],
         'long' => [
             'date' => 'MMMM d, yyyy',
