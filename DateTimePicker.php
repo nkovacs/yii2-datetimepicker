@@ -167,9 +167,29 @@ class DateTimePicker extends \yii\widgets\InputWidget
         if ($file === false) {
             return;
         }
+
         $view->registerJsFile(Yii::$app->assetManager->publish($file)[1], [
             'depends' => '\nkovacs\datetimepicker\MomentAsset',
         ]);
+
+        // use the same strings intl uses, to avoid validation errors.
+        if (extension_loaded('intl')) {
+            $weekdays = LocaleConverter::getWeekdays('EEEE', $this->locale); // dddd
+            $weekdaysShort = LocaleConverter::getWeekdays('EEE', $this->locale); // ddd
+            $weekdaysMin = LocaleConverter::getWeekdays('EEEEEE', $this->locale); // dd
+            $months = LocaleConverter::getMonths('MMMM', $this->locale);
+            $monthsShort = LocaleConverter::getMonths('MMM', $this->locale);
+            $override = Json::encode([
+                'months' => $months,
+                'monthsShort' => $monthsShort,
+                'weekdays' => $weekdays,
+                'weekdaysShort' => $weekdaysShort,
+                'weekdaysMin' => $weekdaysMin,
+            ]);
+            // POS_END is the default for js files.
+            $view->registerJs("moment.locale('$locale', $override)", \yii\web\View::POS_END);
+        }
+
         $this->clientOptions['locale'] = $locale;
     }
 
