@@ -92,6 +92,16 @@ class DateTimePicker extends \yii\widgets\InputWidget
     public $type = self::TYPE_DATETIME;
 
     /**
+     * @var boolean whether to use inline mode.
+     */
+    public $inline = false;
+
+    /**
+     * @var boolean whether to draw the date and time picker side by side.
+     */
+    public $sideBySide = false;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -108,22 +118,35 @@ class DateTimePicker extends \yii\widgets\InputWidget
     public function run()
     {
         Html::addCssClass($this->options, 'form-control');
-        $input = $this->hasModel()
-            ? Html::activeTextInput($this->model, $this->attribute, $this->options)
-            : Html::textInput($this->name, $this->value, $this->options);
-
-        $html = '';
-        $prepend = $this->renderAddon($this->prepend);
-        $append = $this->renderAddon($this->append);
         $addon = false;
-        if ($prepend !== '' || $append !== '') {
-            $addon = true;
+        $html = '';
+
+        if ($this->inline) {
+            $input = $this->hasModel()
+                ? Html::activeHiddenInput($this->model, $this->attribute, $this->options)
+                : Html::hiddenInput($this->name, $this->value, $this->options);
+        } else {
+            $input = $this->hasModel()
+                ? Html::activeTextInput($this->model, $this->attribute, $this->options)
+                : Html::textInput($this->name, $this->value, $this->options);
+            $prepend = $this->renderAddon($this->prepend);
+            $append = $this->renderAddon($this->append);
+            if ($prepend !== '' || $append !== '') {
+                $addon = true;
+            }
+        }
+
+        if ($addon) {
             $html .= Html::beginTag('div', ['class' => 'input-group date']);
             $html .= $prepend;
+        } elseif ($this->inline) {
+            $html .= Html::beginTag('div', ['class' => 'input-group date']);
         }
         $html .= $input;
         if ($addon) {
             $html .= $append;
+            $html .= Html::endTag('div');
+        } elseif ($this->inline) {
             $html .= Html::endTag('div');
         }
         $this->registerPlugin($addon);
@@ -267,7 +290,14 @@ class DateTimePicker extends \yii\widgets\InputWidget
         }
 
         if ($this->clientOptions !== false) {
-            $options = empty($this->clientOptions) ? '' : Json::htmlEncode($this->clientOptions);
+            $options = $this->clientOptions;
+            if ($this->inline) {
+                $options['inline'] = true;
+            }
+            if ($this->sideBySide) {
+                $options['sideBySide'] = true;
+            }
+            $options = empty($options) ? '' : Json::htmlEncode($options);
             $js = "$selector.datetimepicker($options).find('.clearbutton').on('click', function() {
                 $selector.data('DateTimePicker').clear();
             });";
