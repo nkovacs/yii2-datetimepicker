@@ -88,19 +88,11 @@ class FormatConverter extends \yii\helpers\BaseFormatConverter
      */
     public static function convertDateIcuToMoment($pattern, $type = 'date', $locale = null)
     {
-        $pattern = static::convertIcuShortFormatToPattern($pattern, $type, $locale);
-        // http://userguide.icu-project.org/formatparse/datetime#TOC-Date-Time-Format-Syntax
-        // escaped text
-        $escaped = [];
-        if (preg_match_all('/(?<!\')\'(.*?[^\'])\'(?!\')/', $pattern, $matches, PREG_SET_ORDER)) {
-            foreach ($matches as $match) {
-                $match[1] = str_replace('\'\'', '\'', $match[1]);
-                $escaped[$match[0]] = '[' . $match[1] . ']';
-            }
-        }
-
-        return strtr($pattern, array_merge($escaped, [
-            'G' => '',      // era designator like (Anno Domini)
+        $mapping = [
+            'G' => 'N',       // era designator (AD, BC)
+            'GG' => 'NN',     // era designator (AD, BC)
+            'GGG' => 'NNN',   // era designator (AD, BC)
+            'GGGG' => 'NNNN', // era designator (Anno Domini)
             'Y' => 'GGGG',  // 4digit year of "Week of Year"
             'y' => 'YYYY',    // 4digit year e.g. 2014
             'yyyy' => 'YYYY', // 4digit year e.g. 2014
@@ -199,7 +191,42 @@ class FormatConverter extends \yii\helpers\BaseFormatConverter
             'xxx' => '',    // Time Zone: ISO8601 extended hm, without Z, e.g. -08:00
             'xxxx' => '',   // Time Zone: ISO8601 basic hms?, without Z, e.g. -0800, -075258
             'xxxxx' => '',  // Time Zone: ISO8601 extended hms?, without Z, e.g. -08:00, -07:52:58
-        ]));
+        ];
+
+        $pattern = static::convertIcuShortFormatToPattern($pattern, $type, $locale);
+
+        $converted = "";
+        $inescape = false;
+        $buffer = "";
+        for ($i = 0; $i < strlen($pattern); $i++) {
+            if ($pattern[$i] === "'") {
+                if ($i+1 < strlen($pattern) && $pattern[$i+1] === "'") {
+                    $buffer .= "'";
+                    $i++;
+                } else {
+                    if ($inescape) {
+                        $converted .= $buffer . "]";
+                        $inescape = false;
+                        $buffer = "";
+                    } else {
+                        $converted .= strtr($buffer, $mapping) . "[";
+                        $inescape = true;
+                        $buffer = "";
+                    }
+                }
+            } else {
+                $buffer .= $pattern[$i];
+            }
+        }
+        if (strlen($buffer) > 0) {
+            if ($inescape) {
+                $converted .= $buffer;
+            } else {
+                $converted .= strtr($buffer, $mapping);
+            }
+        }
+
+        return $converted;
     }
 
     /**
